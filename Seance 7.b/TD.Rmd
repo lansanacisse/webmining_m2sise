@@ -1,0 +1,18 @@
+---
+title: "TD"
+author: "Lansana CISSE"
+date: "2025-02-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+# import package
+library(OpenStreetMap)
+```
+
+
