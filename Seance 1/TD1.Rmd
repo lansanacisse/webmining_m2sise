@@ -1,0 +1,130 @@
+---
+title: "TD1"
+author: "Lansana CISSE"
+date: "2025-02-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# chargement des données
+tweets <- readRDS("5000_tweets_ol_du_04-02-2023.rds")
+class(tweets)
+```
+
+```{r}
+# afficher le premier tweet
+num_tweet <- 1
+print(tweets[[num_tweet]])
+```
+```{r}
+# afficher l'auteur du premier tweet
+print(tweets[[num_tweet]]$screenName)
+```
+```{r}
+# afficher le texte du premier tweet
+print(tweets[[num_tweet]]$text)
+```
+
+```{r}
+# Afficher l'identifiant du premier tweet
+print(tweets[[num_tweet]]$id)
+```
+
+```{r}
+#  afficher le nombre de retweet du premier tweet
+print(tweets[[num_tweet]]$retweetCount)
+```
+
+```{r}
+# afficher l'auteur du 25e tweet
+num_tweet <- 25
+print(tweets[[num_tweet]]$screenName)
+```
+
+```{r}
+# afficher le texte du 25e tweet
+print(tweets[[num_tweet]]$text)
+
+```
+```{r}
+# Afficher l'identifiant du 25e tweet
+print(tweets[[num_tweet]]$id)
+```
+```{r}
+# afficher le nombre de retweet du 25e tweet
+print(tweets[[num_tweet]]$retweetCount)
+```
+
+```{r}
+# Mettre les tweets dans un data frame
+tweets_df <- data.frame(
+  id = sapply(tweets, function(x) x$id),
+  screenName = sapply(tweets, function(x) x$screenName),
+  text = sapply(tweets, function(x) x$text),
+  retweetCount = sapply(tweets, function(x) x$retweetCount)
+)
+```
+
+```{r}
+# Afficher les 10 premières lignes du data frame
+head(tweets_df, 10)
+```
+```{r}
+# Sauvegarder le data frame dans un fichier texte separé par des tabulations
+write.table(tweets_df, "tweets.txt", sep = "\t", row.names = FALSE)
+```
+
+```{r}
+# Afficher la liste des cols du data frame
+colnames(tweets_df)
+```
+
+```{r}
+# Recuperer le nombre favoris des tweets
+tweets_df$favoriteCount <- sapply(tweets, function(x) x$favoriteCount)
+
+# Afficher le twweet avec le plus de favoris
+tweets_df[tweets_df$favoriteCount == max(tweets_df$favoriteCount), ]
+```
+
+```{r}
+# Afficher les pseudos des tweets
+tweets_df$screenName
+```
+```{r}
+# Recuprer le nombre de tweet par pseudo
+table(tweets_df$screenName)
+```
+```{r}
+# Afficher 5 pseudos les plus actifs avec le nombre de tweets
+sort(table(tweets_df$screenName), decreasing = TRUE)[1:5]
+```
+
+```{r}
+# Recuperer l'ensemble des messsages dans msg
+msg <- tweets_df$text
+
+# afficher les messages
+print(msg)
+```
+```{r}
+# Nombre de tweet ayant été en favoris au moins une fois
+sum(tweets_df$favoriteCount > 0)
+```
+```{r}
+# Nombre de tweet ayant été retweeté au moins une fois
+sum(tweets_df$retweetCount > 0)
+```
+```{r}
+# Nombre de tweet dont le texte est un retweet
+sum(grepl("^RT", tweets_df$text))
+```
+```{r}
+
+```
+

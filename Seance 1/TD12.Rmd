@@ -1,0 +1,145 @@
+```{r}
+# vider la memoire
+rm(list=ls())
+```
+
+
+---
+title: "TD12"
+author: "Lansana CISSE"
+date: "2025-02-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# chargement des données
+tweets <- sentiment_tweets
+```
+
+```{r}
+# Afficher le nombre de lignes
+print(nrow(tweets))
+```
+```{r}
+# le nombre d'occurences de chaque sentiment
+table(tweets$sentiment)
+```
+```{r}
+# Recoder la varaible sentiment 0,1,2 en negative, neutral et positive 
+tweets$sentiment <- factor(tweets$sentiment, levels = c(0, 1, 2), labels = c("negative", "neutral", "positive"))
+```
+```{r}
+# Le nombre d'occurences de chaque sentiment
+table(tweets$sentiment)
+```
+
+```{r}
+# Afficher les 6 premières lignes
+print(head(tweets$message))
+```
+
+```{r}
+library(tm)
+# transformer les messages en corpus
+corpus <- Corpus(VectorSource(tweets$message))
+
+```
+```{r}
+# creer une fonction de nettoyage des données
+clean_corpus <- function(corpus){
+  corpus <- tm_map(corpus, removePunctuation)
+    corpus <- tm_map(corpus, content_transformer(tolower))
+  corpus <- tm_map(corpus, removeNumbers)
+  corpus <- tm_map(corpus, stripWhitespace)
+  return(corpus)
+}
+```
+```{r}
+# nettoyer le corpus
+clean_corpus(corpus)
+```
+```{r}
+# Afficher les 6 premiers messages nettoyés
+corpus$content[1:6]
+```
+```{r}
+# Analyses de sentiments
+library(SentimentAnalysis)
+
+# Voir le dictionnaire
+dicoSa <- loadDictionaryQDAP()
+```
+
+```{r}
+# Afficher les attriibuts de dicoSa
+attributes(dicoSa)
+```
+```{r}
+# afficher la liste des mots positifs
+print(dicoSa$positive)
+```
+```{r}
+# affciher la liste des mots négatifs
+print(dicoSa$negative)
+```
+```{r}
+# Analyse de sentiment de notre corpus
+messages <- corpus$content
+analyse <- analyzeSentiment(messages)
+```
+```{r}
+# Afficher les 6 premiers messages avec leur sentiment
+print(analyse[1:6,])
+```
+
+```{r}
+# Convertissez les scores « SentimentQDAP » en polarités associées aux documents (convertToDirection)
+polarite <- convertToDirection(analyse$SentimentQDAP)
+```
+
+```{r}
+# Taille de polarite
+print(length(polarite))
+```
+
+```{r}
+# calculer la frequence de chaque polarite
+table(polarite)
+```
+```{r}
+# Comparer les polarités calculées avec les polarités réelles
+table(polarite, tweets$sentiment)
+
+# taux de reconnaissance
+taux <- sum(polarite == tweets$sentiment) / length(polarite)
+
+print(taux)
+```
+
+```{r}
+# Quel serait le taux de reconnaissance si on affecte systématiquement les tweets à la classe majoritaire ? 
+table(tweets$sentiment)
+taux_majoritaire <- max(table(tweets$sentiment))/length(tweets$sentiment)
+print(taux_majoritaire)
+```
+
+
+## ANALYSE DES SENTIMENTS AVEC « TIDYTEXT »
+
+```{r}
+library(tidytext)
+```
+```{r}
+# charger le theasurus bing
+bing <- get_sentiments("bing")
+head(bing)
+```
+```{r}
+dfMsg <- tibble(1:length(messages), corpus$content))
+```
+
